@@ -1,6 +1,6 @@
 import time
 import sys
-import random
+from random import randint
 
 
 class GameBoard:
@@ -84,7 +84,54 @@ def print_board(board):
             f'{row[0]} ', ' '.join(x for x in row[1])
         )
 size = 10
-
+b = 0
+num_ships = 10
 user_board = GameBoard(size)
+computer_board = GameBoard(size)
 
-user_board.print_board()
+def player_choose_ships():
+    # user can choose location of his own ships (need validation)
+    user_board.print_board()
+    while b < num_ships:
+        x = int(input("please enter number 0-9: "))
+        y = int(input("pluse enter number 0-9: "))
+        if user_board.board[x][y] == "-":
+            user_board.board[x][y] = "@"
+            user_board.print_board()
+        else:
+            print("ship is already there")
+        b += 1
+
+computer_ships = []
+def random_ship_location(data):
+    b = 0
+    #  randomly choose ships on the board
+    while b < num_ships:
+        x = randint(0, size - 1)
+        y = randint(0, size -1)
+        if data.board[x][y] == "-":
+            data.board[x][y] = "@"
+            pair = (x, y)
+            computer_ships.append(pair)
+        else:
+            continue
+        b += 1
+
+
+
+random_ship_location(computer_board)
+# random_ship_location(user_board)
+# print("Szymon Board")
+# user_board.print_board()
+# print("*" * 40)
+# print("Computer Board")
+# computer_board.print_board()
+# print("*" * 40)
+# computer_board.print_board()
+# print(computer_board.board[1][2])
+print(computer_ships)
+pair = (7, 3)
+if pair in computer_ships:
+    print("Yes")
+else:
+    print("no")
