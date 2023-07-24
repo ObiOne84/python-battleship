@@ -131,15 +131,19 @@ def random_ship_shot(data):
     #     print("hit")
     #     pair = (x, y)
     #     computer_guess.append(pair)
-
-    if pair not in computer_ships:
-        data.board[x][y] = "0"
-        print("miss\n")
-        computer_guess.append(pair)
+    global num_ships
+    if pair in computer_guess:
+        print("shoot again")
     else:
-        data.board[x][y] = "#"
-        print("Hit\n")
-        computer_guess.append(pair)
+        if pair not in computer_ships:
+            data.board[x][y] = "0"
+            print("miss\n")
+            computer_guess.append(pair)
+        else:
+            data.board[x][y] = "#"
+            print("Hit\n")
+            computer_guess.append(pair)
+            num_ships -= 1
 
     
 
@@ -328,11 +332,16 @@ def play_game():
 
 # -------------------------------------------------------
 def main():
+
+    global num_ships
     # intro()
     game_set()
     b = 0
-    while b < 50:
+    while b < 100 and num_ships > 0:
         play_game()
+        print(num_ships)
         b += 1
+    else:
+        print("Game Over")
 
 main()
