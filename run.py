@@ -92,24 +92,56 @@ num_ships = 10
 user_board = GameBoard(size)
 computer_board = GameBoard(size)
 computer_ships = []
+user_ship = []
+computer_guess = []
 # -------------------------------------------------
 
-def random_ship_location(data):
-    """
-    randomly choose ships on the board
-    """
+# def random_ship_location(data):
+#     """
+#     randomly choose ships on the board
+#     """
 
-    b = 0
-    while b < num_ships:
-        x = randint(0, size - 1)
-        y = randint(0, size -1)
-        if data.board[x][y] == "-":
-            data.board[x][y] = "@"
-            pair = (x, y)
-            computer_ships.append(pair)
-        else:
-            continue
-        b += 1
+#     b = 0
+#     while b < num_ships:
+#         x = randint(0, size - 1)
+#         y = randint(0, size -1)
+#         if data.board[x][y] == "-":
+#             data.board[x][y] = "@"
+#             pair = (x, y)
+#             computer_ships.append(pair)
+#         else:
+#             continue
+#         b += 1
+
+def random_ship_shot(data):
+    """
+    randomly shoot at ships
+    """
+    x = randint(0, size - 1)
+    y = randint(0, size -1)
+    pair = (x, y)
+
+    # if data.board[x][y] == "-":
+    #     data.board[x][y] = "0"
+    #     print("miss")
+    #     pair = (x, y)
+    #     computer_guess.append(pair)
+    # elif data.board[x][y] == "@":
+    #     data.board[x][y] = "#"
+    #     print("hit")
+    #     pair = (x, y)
+    #     computer_guess.append(pair)
+
+    if pair not in computer_ships:
+        data.board[x][y] = "0"
+        print("miss\n")
+        computer_guess.append(pair)
+    else:
+        data.board[x][y] = "#"
+        print("Hit\n")
+        computer_guess.append(pair)
+
+    
 
 def player_choose_ships():
     """
@@ -134,15 +166,38 @@ def player_choose_ships():
     #     else:
     #         print("ship is already there")
     #     b += 1
-    b = 0
-    while b < num_ships:
-        while True:
-            ship_loc = input("please enter ship location: ")
-            tansform_coordinates(ship_loc)
+    while True:
+        ship_loc = input("please enter ship location: ")
+        get_x_cordinate(ship_loc)
+
+        if get_x_cordinate(ship_loc):
+            x = (1, 1)
+            user_ship.append(x)
             break
-        b += 1
-  
+
         
+
+
+  
+def get_x_cordinate(data):
+    """
+    Function check user coordinates input and returns x
+    """
+    alphabet = ["ABCDEFGHIJKLMNOPRTQUXYZ"]
+    alphabet = ''.join(alphabet[:size])
+    try:
+        if len(data) < 1 and len(data) > 3:
+            raise ValueError
+               
+            #     for symbols in alphabet:
+        elif data[0].upper() not in alphabet:
+            raise ValueError        
+       
+    except ValueError as e:
+        print(f"Invalid data. You provided '{data}', this is not recognised value.\n")
+        return False
+
+    return True          
 
 def tansform_coordinates(data):
     """
@@ -184,7 +239,8 @@ def random_ship_location(data):
         x = randint(0, size - 1)
         y = randint(0, size -1)
         if data.board[x][y] == "-":
-            data.board[x][y] = "@"
+# comment out to see if works when not display ships but check the list instead
+            # data.board[x][y] = "@" 
             pair = (x, y)
             computer_ships.append(pair)
         else:
@@ -241,28 +297,42 @@ def validate_ship_loc(board, x, y):
 # print("*" * 40)
 # print("Computer Board")
 # computer_board.print_board()
+# print(computer_ships)
 # print("*" * 40)
 # computer_board.print_board()
 # print(computer_board.board[1][2])
 # print(computer_ships)
+
 # pair = (7, 3)
 # if pair in computer_ships:
 #     print("Yes")
 # else:
 #     print("no")
-player_choose_ships()
 
-
-# alphabet = ["ABCDEFGHIJKLMNOPRTQUXYZ"]
-# alphabet = ''.join(alphabet[:n])
-
-# if data[0].upper() in ''.join(alphabet[:n]):
-#     print(data[0].upper())
-#     print(alphabet.index(data[0].upper()))
-# else:
-#     print("out of range")
+# player_choose_ships()
+# print(user_ship)
+def game_set():
     
-# print(''.join(alphabet[:n]))
+    computer_board.print_board()
+    random_ship_location(computer_board)
+    # computer_board.print_board()
+
+def play_game():
+    
+    random_ship_shot(computer_board)
+    computer_board.print_board()
+
+        
+
 
 
 # -------------------------------------------------------
+def main():
+    # intro()
+    game_set()
+    b = 0
+    while b < 50:
+        play_game()
+        b += 1
+
+main()
