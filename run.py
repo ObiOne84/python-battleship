@@ -3,12 +3,23 @@ import sys
 from random import randint
 
 
+def print_out(data):
+    """
+    The function will display text as it typed in real
+    time rather than dispaly all message at once
+    """
+    for letter in data:
+        sys.stdout.write(letter)
+        sys.stdout.flush()
+        time.sleep(0.05)
+
+
 class GameBoard:
 
     def __init__(self, size):
         self.size = size
         self.board = [["-" for x in range(size)] for y in range(size)]
-        # self.num_ships = num_ships
+        self.num_ships = num_ships
         # self.name = name
         # self.type = type
         self.guesses = []
@@ -58,43 +69,90 @@ class GameBoard:
     #         if self.type == "player":
     #             self.board[x][y] = "O"
 
-def print_board(board):
+
+def game_level():
     """
-    Function builds game board
+    function checks user input and defines the size of the game board
+    need to add validation here
     """
-    alphabet = ["ABCDEFGHIJKLMNOPRTQUXYZ"]
 
-    # if n is a paramter, take n number of characters from the alphabet
-    alphabet = ''.join(alphabet[:size])
+    while True:
+        message = """
+    Please choose your gaming experience by choosing one of three options:
+    choose 'b' for beginner
+    choose 'i' for intermediate
+    or  choose 'e' for expert.\n
+    """
+        print_out(message)
+        global user_name
+        user_name = input(f"Please enter username: ")
+        user_input = input(f"Please indicate your game experience: ")
+        user_experience = user_input.lower()
 
-    column_values = []
-    for num in range(size):
-        column_values.append(num + 1)
+        try:
+            if user_experience == "b":
+                print_out(f"Thank you {user_name}. Your game experience level is beginner.\n")
+                return 5
+            elif user_experience == "i":
+                print_out("Thank you. Your game experience level is intermediate.\n")
+                return 10
+            elif user_experience == "e":
+                print_out("Thank you. Your game experience level is expert.\n")
+                return 10
+            else:
+                raise ValueError
+        except ValueError as e:
+           print_out(f"Invalid data. You provided '{user_experience}', this is not recognised value.\n")
 
-    print(" ", *column_values)
+
+# -------------------------------------------------------------------------------
+# def print_board(board):
+#     """
+#     Function builds game board
+#     """
+#     alphabet = ["ABCDEFGHIJKLMNOPRTQUXYZ"]
+
+#     # if n is a paramter, take n number of characters from the alphabet
+#     alphabet = ''.join(alphabet[:size])
+
+#     column_values = []
+#     for num in range(size):
+#         column_values.append(num + 1)
+
+#     print(" ", *column_values)
 
     
-    # loop over the zipped lists, row is the index, cell is the list in the loop
-    for index, row in enumerate(zip(alphabet, GameBoard.board)):
-        # there are two items in the list, 
-        # row[0] is the alphabet character, row[1] is the board row
-        # the character can be printed as is
-        # the board list must be joined as a string
-        print(
-            f'{row[0]} ', ' '.join(x for x in row[1])
-        )
-
+#     # loop over the zipped lists, row is the index, cell is the list in the loop
+#     for index, row in enumerate(zip(alphabet, GameBoard.board)):
+#         # there are two items in the list, 
+#         # row[0] is the alphabet character, row[1] is the board row
+#         # the character can be printed as is
+#         # the board list must be joined as a string
+#         print(
+#             f'{row[0]} ', ' '.join(x for x in row[1])
+#         )
+# -----------------------------------------------------------------------------------
 # Sample variables for trials
 # -------------------------------------------------
-size = 10
+size = 5
 b = 0
-num_ships = 10
+num_ships = 5
 user_board = GameBoard(size)
 computer_board = GameBoard(size)
 computer_ships = []
 user_ship = []
 computer_guess = []
 # -------------------------------------------------
+def game_decision_tree():
+    """
+    function that informs user about the board size, number of ships and gives option to choose ships
+    """
+    print_out(f"Thank you {user_name}. You can now place ships on the on the board.")
+    print_out(f"The game board will have {size} rows and {size} columns." )
+    print_out(f"You can place {num_ships} ships on the board.")
+    print_out(f"You can choose location of the ships on the board or they will be set random.")
+    user_decision = input(f"Do you wish to place the ships on the board Y/N: ").upper()
+    print_out(user_decision)
 
 # def random_ship_location(data):
 #     """
@@ -145,11 +203,13 @@ def random_ship_shot(data):
             computer_guess.append(pair)
             num_ships -= 1
 
+# def validate_shot(data):
     
 
 def player_choose_ships():
     """
     user can choose location of his own ships (need validation)
+    # not working
     """
     # b = 0
     # while b < num_ships:
@@ -172,65 +232,66 @@ def player_choose_ships():
     #     b += 1
     while True:
         ship_loc = input("please enter ship location: ")
-        get_x_cordinate(ship_loc)
+        validate_coordinates(ship_loc)
 
-        if get_x_cordinate(ship_loc):
-            x = (1, 1)
-            user_ship.append(x)
+        if validate_coordinates(ship_loc):
+            print("Great, you choose your ship!")
             break
+    return ship_loc
 
-        
 
-
-  
-def get_x_cordinate(data):
+def validate_coordinates(values):
     """
-    Function check user coordinates input and returns x
+    Function validates users ships coardinates
     """
     alphabet = ["ABCDEFGHIJKLMNOPRTQUXYZ"]
     alphabet = ''.join(alphabet[:size])
-    try:
-        if len(data) < 1 and len(data) > 3:
-            raise ValueError
-               
-            #     for symbols in alphabet:
-        elif data[0].upper() not in alphabet:
-            raise ValueError        
-       
-    except ValueError as e:
-        print(f"Invalid data. You provided '{data}', this is not recognised value.\n")
-        return False
 
-    return True          
+    try:
+        if len(values) > 3:
+            print("bad batch")
+            raise ValuepytError
+        if len(values) == 3 and int(values[2]) != 0 and int(values[1]) != 1:
+            print("incorrect value")
+            raise ValueError
+        if len(values) < 2:
+            print("too short")
+            raise ValueError
+        if values[0].upper() not in ''.join(alphabet[:size]):
+            print(f"{values[0].upper()} is not a column name on the game board")
+            raise ValueError
+        if values[1].isnumeric() == False:
+            print(f" '{values[1]}' not a number")
+            raise ValueError
+        if int(values[1]) > size:
+            print(f"{values[1]} is not a row number. Please choose number between 1 and {size}")
+            raise ValueError
+
+    
+    except ValueError:
+        print("Please enter valid coordinates.")
+        return False
+    
+    return True
+
 
 def tansform_coordinates(data):
     """
     Function checks if user coordinates are correct format 
-    if yes, it returns values for x and y
+    if yes, it returns values for x and y 
+    # not working
     """
     alphabet = ["ABCDEFGHIJKLMNOPRTQUXYZ"]
     alphabet = ''.join(alphabet[:size])
-    while True:
-        try:
-            if len(data) <= 3:
-                if data[0].upper() in ''.join(alphabet[:size]):
-                    if len(data) == 3:
-                        if int(data[1]) == 1 and data[2] == 0:
-                            return True
-                        else:
-                            raise ValueError
-                    elif len(data) < 3:
-                        if int(data[1]) in range(size + 1):
-                            return True
-                        else:
-                            raise ValueError
-                    else:
-                        raise ValueError
-                else:
-                    raise ValueError
-        except ValueError as e:
-            print(f"Invalid data. You provided '{data}', this is not recognised value.\n")
-            break
+ 
+    if len(data) <= 3:
+        if data[0].upper() in ''.join(alphabet[:size]):
+            if len(data) == 3:
+                if int(data[1]) == 1 and data[2] == 0:
+                    return True
+                elif len(data) < 3:
+                    if int(data[1]) in range(size + 1):
+                        return True
 
 
 def random_ship_location(data):
@@ -246,6 +307,7 @@ def random_ship_location(data):
 # comment out to see if works when not display ships but check the list instead
             # data.board[x][y] = "@" 
             pair = (x, y)
+            # data.append(pair)
             computer_ships.append(pair)
         else:
             continue
@@ -312,25 +374,36 @@ def validate_ship_loc(board, x, y):
 #     print("Yes")
 # else:
 #     print("no")
+# word = "aa2"
+# if word[1].isnumeric() == False:
+#     print("bad")
+# else:
+#     print("goodS")
 
-# player_choose_ships()
-# print(user_ship)
+ship_coordinates = player_choose_ships()
+print(ship_coordinates)
+
+# ship_loc = input("please enter ship location: ")
+# print(ship_loc)
+# print(len(ship_loc))
+# get_x_cordinate(ship_loc)
+   
+
+# -------------------------------------
+# game trial function
 def game_set():
     
     computer_board.print_board()
     random_ship_location(computer_board)
     # computer_board.print_board()
 
+
 def play_game():
     
     random_ship_shot(computer_board)
     computer_board.print_board()
 
-        
 
-
-
-# -------------------------------------------------------
 def main():
 
     global num_ships
@@ -344,4 +417,5 @@ def main():
     else:
         print("Game Over")
 
-main()
+# main()
+# -------------------------------------------------------
