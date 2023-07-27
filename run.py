@@ -16,12 +16,12 @@ def print_out(data):
 
 class GameBoard:
 
-    def __init__(self, size):
+    def __init__(self, size, name, type):
         self.size = size
         self.board = [["-" for x in range(size)] for y in range(size)]
         self.num_ships = num_ships
-        # self.name = name
-        # self.type = type
+        self.name = name
+        self.type = type
         self.guesses = []
         self.ships = []
 
@@ -42,7 +42,7 @@ class GameBoard:
 
     
         # loop over the zipped lists, row is the index, cell is the list in the loop
-        for index, row in enumerate(zip(alphabet, self.board)):
+        for row, row in enumerate(zip(alphabet, self.board)):
             # there are two items in the list, 
             # row[0] is the alphabet character, row[1] is the board row
             # the character can be printed as is
@@ -51,23 +51,23 @@ class GameBoard:
                 f'{row[0]}', ' '.join(x for x in row[1])
             )
 
-    # def guess(self, x, y):
-    #     self.guesses.append((x, y))
-    #     self.board[x][y] = "X"
+    def guess(self, x, y):
+        self.guesses.append((x, y))
+        self.board[x][y] = "#"
 
-    #     if (x, y) in self.ships:
-    #         self.board[x][y] = "*"
-    #         return "Hit"
-    #     else:
-    #         return "Miss"
+        if (x, y) in self.ships:
+            self.board[x][y] = "X"
+            return "Hit"
+        else:
+            return "Miss"
     
-    # def add_ship(self, x, y, type="computer"):
-    #     if len(self.ships) >= self.num_ships:
-    #         print("Error: you cannot add any more ships!")
-    #     else:
-    #         self.ships.append((x, y))
-    #         if self.type == "player":
-    #             self.board[x][y] = "O"
+    def add_ship(self, x, y, type="computer"):
+        if len(self.ships) >= self.num_ships:
+            print("Error: you cannot add any more ships!")
+        else:
+            self.ships.append((x, y))
+            if self.type == "player":
+                self.board[x][y] = "O"
 
 
 def game_level():
@@ -110,14 +110,18 @@ def game_level():
 # -------------------------------------------------
 size = 5
 b = 0
+
+user_name = "Szymon"
 num_ships = 5
-user_board = GameBoard(size)
-computer_board = GameBoard(size)
+user_board = GameBoard(size, name=user_name, type="player")
+computer_board = GameBoard(size, "cpu", type="computer")
 computer_ships = []
 user_ship = []
 computer_guess = []
 shots = 5
 guesses = []
+
+
 # -------------------------------------------------
 def game_decision_tree():
     """
@@ -325,34 +329,34 @@ def random_ship_location(data):
 #     print("bad")
 # else:
 #     print("goodS")
-user_board = GameBoard(size)
-user_board.print_board()
+# user_board = GameBoard(size)
+# user_board.print_board()
 
-while len(user_ship) < num_ships:
-    z = player_choose_ships()
-    x = return_x_value(z)
-    y = return_y_value(z)
-    user_ship_location(user_board, x, y)
-    user_board.print_board()
-    print(f"You have placed {len(user_ship)} ship/s.")
-print("Great, now it is time to play a game.\n")
+# while len(user_ship) < num_ships:
+#     z = player_choose_ships()
+#     x = return_x_value(z)
+#     y = return_y_value(z)
+#     user_ship_location(user_board, x, y)
+#     user_board.print_board()
+#     print(f"You have placed {len(user_ship)} ship/s.")
+# print("Great, now it is time to play a game.\n")
 
-while shots > 0:
-    z = player_choose_ships()
-    x = return_x_value(z)
-    y = return_y_value(z)
-    user_shots_two(user_board, x, y)
-    user_board.print_board()
-    print(f"You have {shots} shots left.")
-else:
-    print("Game Over")
+# while shots > 0:
+#     z = player_choose_ships()
+#     x = return_x_value(z)
+#     y = return_y_value(z)
+#     user_shots_two(user_board, x, y)
+#     user_board.print_board()
+#     print(f"You have {shots} shots left.")
+# else:
+#     print("Game Over")
 
 
-print(len(guesses))
-print(num_ships)
-print(user_ship)
-print(guesses)
-print(shots)
+# print(len(guesses))
+# print(num_ships)
+# print(user_ship)
+# print(guesses)
+# print(shots)
 # -------------------------------------
 # game trial function
 # def game_set():
@@ -383,3 +387,15 @@ print(shots)
 
 # main()
 # -------------------------------------------------------
+# this needs validation as it is possible to add ship to the same location
+print(computer_board.name)
+print(user_board.name)
+while len(user_board.ships) < num_ships:
+    user_board.print_board()
+    cordinates = player_choose_ships()
+    x = return_x_value(cordinates)
+    y = return_y_value(cordinates)
+    user_board.add_ship(x, y)
+
+    
+print(user_board.ships)
