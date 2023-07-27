@@ -154,22 +154,6 @@ def game_decision_tree():
     user_decision = input(f"Do you wish to place the ships on the board Y/N: ").upper()
     print_out(user_decision)
 
-# def random_ship_location(data):
-#     """
-#     randomly choose ships on the board
-#     """
-
-#     b = 0
-#     while b < num_ships:
-#         x = randint(0, size - 1)
-#         y = randint(0, size -1)
-#         if data.board[x][y] == "-":
-#             data.board[x][y] = "@"
-#             pair = (x, y)
-#             computer_ships.append(pair)
-#         else:
-#             continue
-#         b += 1
 
 def random_ship_shot(data):
     """
@@ -179,16 +163,6 @@ def random_ship_shot(data):
     y = randint(0, size -1)
     pair = (x, y)
 
-    # if data.board[x][y] == "-":
-    #     data.board[x][y] = "0"
-    #     print("miss")
-    #     pair = (x, y)
-    #     computer_guess.append(pair)
-    # elif data.board[x][y] == "@":
-    #     data.board[x][y] = "#"
-    #     print("hit")
-    #     pair = (x, y)
-    #     computer_guess.append(pair)
     global num_ships
     if pair in computer_guess:
         print("shoot again")
@@ -208,36 +182,17 @@ def random_ship_shot(data):
 
 def player_choose_ships():
     """
-    user can choose location of his own ships (need validation)
-    # not working
+    user can choose location of his own ships
+
     """
-    # b = 0
-    # while b < num_ships:
-    #     x = int(input("please enter number 0-9: "))
-    #     y = int(input("pluse enter number 0-9: "))
-    #     if user_board.board[x][y] == "-":
-    #         user_board.board[x][y] = "@"
-    #         user_board.print_board()
-    #     else:
-    #         print("ship is already there")
-    #     b += 1
-    # while b < num_ships:
-    #     ship_loc = int(input("please enter ship location: "))
-    #     transfor_coordinates(ship_loc)
-    #     if user_board.board[x][y] == "-":
-    #         user_board.board[x][y] = "@"
-    #         user_board.print_board()
-    #     else:
-    #         print("ship is already there")
-    #     b += 1
+
     while True:
         ship_loc = input("please enter ship location: ")
-        validate_coordinates(ship_loc)
 
         if validate_coordinates(ship_loc):
             print("Great, you choose your ship!")
             break
-    return ship_loc
+    return ship_loc.upper()
 
 
 def validate_coordinates(values):
@@ -275,23 +230,57 @@ def validate_coordinates(values):
     return True
 
 
-def tansform_coordinates(data):
+def return_x_value(data):
     """
-    Function checks if user coordinates are correct format 
-    if yes, it returns values for x and y 
-    # not working
+    Function return x coordinate for the ship or shot
     """
     alphabet = ["ABCDEFGHIJKLMNOPRTQUXYZ"]
     alphabet = ''.join(alphabet[:size])
  
-    if len(data) <= 3:
-        if data[0].upper() in ''.join(alphabet[:size]):
-            if len(data) == 3:
-                if int(data[1]) == 1 and data[2] == 0:
-                    return True
-                elif len(data) < 3:
-                    if int(data[1]) in range(size + 1):
-                        return True
+    if data[0] in ''.join(alphabet[:size]):
+        x = alphabet.index(data[0])
+        return x
+
+
+def return_y_value(data):
+    """
+    Function return y coordinate for the ship or shot
+    """
+    if len(data) == 3:
+        y = int(data[1] + data[2]) - 1
+        return y
+    else:
+        y = int(data[1]) - 1
+        return y
+
+
+def user_ship_location(data, x, y):
+    """
+    randomly choose ships on the board
+    """
+
+    if data.board[x][y] == "-":
+        data.board[x][y] = "@" 
+        pair = (x, y)
+        # data.append(pair)
+        user_ship.append(pair)
+    elif data.board[x][y] == "@":
+        print("You already placed ship here")
+
+
+def user_shots(data, x, y):
+    """
+    randomly choose ships on the board
+    """
+
+    if data.board[x][y] == "-":
+        data.board[x][y] = "@" 
+        pair = (x, y)
+        # data.append(pair)
+        user_ship.append(pair)
+    elif data.board[x][y] == "@":
+        print("You already placed ship here")
+       
 
 
 def random_ship_location(data):
@@ -305,7 +294,7 @@ def random_ship_location(data):
         y = randint(0, size -1)
         if data.board[x][y] == "-":
 # comment out to see if works when not display ships but check the list instead
-            # data.board[x][y] = "@" 
+            data.board[x][y] = "@" 
             pair = (x, y)
             # data.append(pair)
             computer_ships.append(pair)
@@ -314,60 +303,10 @@ def random_ship_location(data):
         b += 1
 
 
-def validate_ship_loc(board, x, y):
-    """
-    function validates user input for ship location
-    """
-    n = 5
-    b = 0
-    alphabet = ["ABCDEFGHIJKLMNOPRTQUXYZ"]
-      
-    x = input(f"Provide your element: ")
-  
-            # b = 0
-            # while b < n:
-
-            # x = input(f"Provide your element: ")
-            # y = input(f"Second number: ")
-            # board[int(x) - 1][int(y) - 1] = "X"
-            # b += 1
-       
-    try:
-        if len(x) <= 3:
-            # print(len(x))
-            for symbols in alphabet:
-                if x[0].upper() in symbols:
-                    print(symbols.index(x[0].upper()))
-                    if len(x) == 3:
-                        if int(x[1]) in range(n + 1) and x[2] == 0:
-                            print(int(x[1] + x[2]) - 1)
-                            board[symbols.index(x[0].upper())][int(x[1] + x[2]) - 1] = "@"   
-                    elif len(x) < 3:
-                        if int(x[1]) in range(n + 1):
-                            print(int(x[1]) - 1)
-                            board[symbols.index(x[0].upper())][int(x[1]) - 1] = "@"   
-                    else:
-                        raise ValueError
-        else:
-            raise ValueError
-    except ValueError as e:
-        text_print_control(f"Invalid data. You provided '{x}', this is not recognised value.\n")
-
-
 # -------------------------------------------------------
 # Test area
-# random_ship_location(computer_board)
-# random_ship_location(user_board)
-# print("Szymon Board")
-# user_board.print_board()
 # print("*" * 40)
-# print("Computer Board")
-# computer_board.print_board()
-# print(computer_ships)
-# print("*" * 40)
-# computer_board.print_board()
-# print(computer_board.board[1][2])
-# print(computer_ships)
+
 
 # pair = (7, 3)
 # if pair in computer_ships:
@@ -379,15 +318,18 @@ def validate_ship_loc(board, x, y):
 #     print("bad")
 # else:
 #     print("goodS")
+user_board = GameBoard(size)
+user_board.print_board()
 
-ship_coordinates = player_choose_ships()
-print(ship_coordinates)
+while len(user_ship) < num_ships:
+    z = player_choose_ships()
+    x = return_x_value(z)
+    y = return_y_value(z)
+    user_ship_location(user_board, x, y)
+    user_board.print_board()
 
-# ship_loc = input("please enter ship location: ")
-# print(ship_loc)
-# print(len(ship_loc))
-# get_x_cordinate(ship_loc)
-   
+
+print(user_ship)
 
 # -------------------------------------
 # game trial function
@@ -400,7 +342,7 @@ def game_set():
 
 def play_game():
     
-    random_ship_shot(computer_board)
+    # random_ship_shot(computer_board)
     computer_board.print_board()
 
 
