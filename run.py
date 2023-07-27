@@ -105,32 +105,6 @@ def game_level():
            print_out(f"Invalid data. You provided '{user_experience}', this is not recognised value.\n")
 
 
-# -------------------------------------------------------------------------------
-# def print_board(board):
-#     """
-#     Function builds game board
-#     """
-#     alphabet = ["ABCDEFGHIJKLMNOPRTQUXYZ"]
-
-#     # if n is a paramter, take n number of characters from the alphabet
-#     alphabet = ''.join(alphabet[:size])
-
-#     column_values = []
-#     for num in range(size):
-#         column_values.append(num + 1)
-
-#     print(" ", *column_values)
-
-    
-#     # loop over the zipped lists, row is the index, cell is the list in the loop
-#     for index, row in enumerate(zip(alphabet, GameBoard.board)):
-#         # there are two items in the list, 
-#         # row[0] is the alphabet character, row[1] is the board row
-#         # the character can be printed as is
-#         # the board list must be joined as a string
-#         print(
-#             f'{row[0]} ', ' '.join(x for x in row[1])
-#         )
 # -----------------------------------------------------------------------------------
 # Sample variables for trials
 # -------------------------------------------------
@@ -142,6 +116,8 @@ computer_board = GameBoard(size)
 computer_ships = []
 user_ship = []
 computer_guess = []
+shots = 5
+guesses = []
 # -------------------------------------------------
 def game_decision_tree():
     """
@@ -177,8 +153,6 @@ def random_ship_shot(data):
             computer_guess.append(pair)
             num_ships -= 1
 
-# def validate_shot(data):
-    
 
 def player_choose_ships():
     """
@@ -206,7 +180,7 @@ def validate_coordinates(values):
         if len(values) > 3:
             print("bad batch")
             raise ValuepytError
-        if len(values) == 3 and int(values[2]) != 0 and int(values[1]) != 1:
+        if len(values) == 3 and int(values[1] + values[2]) != 10:
             print("incorrect value")
             raise ValueError
         if len(values) < 2:
@@ -256,7 +230,7 @@ def return_y_value(data):
 
 def user_ship_location(data, x, y):
     """
-    randomly choose ships on the board
+    Append ship  to the game board as per user coordinates 
     """
 
     if data.board[x][y] == "-":
@@ -270,17 +244,50 @@ def user_ship_location(data, x, y):
 
 def user_shots(data, x, y):
     """
-    randomly choose ships on the board
+    Check the position of the ships, and 
     """
 
+    pair = (x, y)
     if data.board[x][y] == "-":
-        data.board[x][y] = "@" 
-        pair = (x, y)
-        # data.append(pair)
-        user_ship.append(pair)
+        data.board[x][y] = "0"
+        print("Sorry, you missed")
+        guesses.append(pair)
+        shots -= 1
     elif data.board[x][y] == "@":
-        print("You already placed ship here")
+        data.board[x][y] = "X"
+        guesses.append(pair)
+        print("That's a HIT")
+    else:
+        print("Sorry, you already shot here! Try again!")
        
+
+def user_shots_two(data, x, y):
+    """
+    Function record user shots, and check against board
+    reduce the number of shots after each round
+    and ships after each hit
+    """
+    global num_ships
+    global shots
+    pair = (x, y)
+
+    if pair in guesses:
+        print("shoot again")
+    else:
+        if pair not in user_ship:
+            data.board[x][y] = "0"
+            print("miss\n")
+            guesses.append(pair)
+            shots -= 1
+            return False
+    
+        else:
+            data.board[x][y] = "X"
+            print("Hit\n")
+            guesses.append(pair)
+            num_ships -= 1
+            shots -= 1
+            return False
 
 
 def random_ship_location(data):
@@ -327,37 +334,52 @@ while len(user_ship) < num_ships:
     y = return_y_value(z)
     user_ship_location(user_board, x, y)
     user_board.print_board()
+    print(f"You have placed {len(user_ship)} ship/s.")
+print("Great, now it is time to play a game.\n")
+
+while shots > 0:
+    z = player_choose_ships()
+    x = return_x_value(z)
+    y = return_y_value(z)
+    user_shots_two(user_board, x, y)
+    user_board.print_board()
+    print(f"You have {shots} shots left.")
+else:
+    print("Game Over")
 
 
+print(len(guesses))
+print(num_ships)
 print(user_ship)
-
+print(guesses)
+print(shots)
 # -------------------------------------
 # game trial function
-def game_set():
+# def game_set():
     
-    computer_board.print_board()
-    random_ship_location(computer_board)
+#     computer_board.print_board()
+#     random_ship_location(computer_board)
     # computer_board.print_board()
 
 
-def play_game():
+# def play_game():
     
     # random_ship_shot(computer_board)
-    computer_board.print_board()
+    # computer_board.print_board()
 
 
-def main():
+# def main():
 
-    global num_ships
+#     global num_ships
     # intro()
-    game_set()
-    b = 0
-    while b < 100 and num_ships > 0:
-        play_game()
-        print(num_ships)
-        b += 1
-    else:
-        print("Game Over")
+    # game_set()
+    # b = 0
+    # while b < 100 and num_ships > 0:
+    #     play_game()
+    #     print(num_ships)
+    #     b += 1
+    # else:
+    #     print("Game Over")
 
 # main()
 # -------------------------------------------------------
