@@ -16,12 +16,12 @@ def print_out(data):
 
 class GameBoard:
 
-    def __init__(self, size, name, type):
+    def __init__(self, size, name):
         self.size = size
         self.board = [["-" for x in range(size)] for y in range(size)]
-        self.num_ships = num_ships
+        # self.num_ships = num_ships
         self.name = name
-        self.type = type
+        # self.type = type
         self.guesses = []
         self.ships = []
 
@@ -51,23 +51,34 @@ class GameBoard:
                 f'{row[0]}', ' '.join(x for x in row[1])
             )
 
-    def guess(self, x, y):
-        self.guesses.append((x, y))
-        self.board[x][y] = "#"
-
-        if (x, y) in self.ships:
-            self.board[x][y] = "X"
-            return "Hit"
+    def guess(self, data, name):
+        if name == "Computer":
+            random_ship_shot(self, data)
         else:
-            return "Miss"
+            user_shots_two(self, data, x, y)
     
-    def add_ship(self, x, y, type="computer"):
-        if len(self.ships) >= self.num_ships:
-            print("Error: you cannot add any more ships!")
-        else:
-            self.ships.append((x, y))
-            if self.type == "player":
-                self.board[x][y] = "O"
+    def add_ship(self, x, y):
+
+        user_ship_location(self, x, y)
+
+
+    def random_ship_location(self):
+        """
+        randomly choose ships on the board
+        """
+        
+        b = 0
+        while b < num_ships:
+            x = randint(0, size - 1)
+            y = randint(0, size -1)
+            if self.board[x][y] == "-":
+                self.board[x][y] = "@" 
+                pair = (x, y)
+                self.ships.append(pair)
+            else:
+                continue
+            b += 1
+
 
 
 def game_level():
@@ -108,17 +119,17 @@ def game_level():
 # -----------------------------------------------------------------------------------
 # Sample variables for trials
 # -------------------------------------------------
-size = 5
+size = 10
 b = 0
 
 user_name = "Szymon"
 num_ships = 5
-user_board = GameBoard(size, name=user_name, type="player")
-computer_board = GameBoard(size, "cpu", type="computer")
+user_board = GameBoard(size, name=user_name)
+computer_board = GameBoard(size, "cpu")
 computer_ships = []
 user_ship = []
 computer_guess = []
-shots = 5
+shots = 20
 guesses = []
 
 
@@ -156,6 +167,36 @@ def random_ship_shot(data):
             print("Hit\n")
             computer_guess.append(pair)
             num_ships -= 1
+
+
+# ----------------------------------------------------------------
+# sample for GameBoard - works :D 
+def random_ship_shot(self, data):
+    """
+    randomly shoot at ships
+    """
+    x = randint(0, size - 1)
+    y = randint(0, size -1)
+    pair = (x, y)
+    global shots
+    global num_ships
+    if pair in self.guesses:
+        print("shoot again")
+    else:
+        if pair not in data.ships:
+            data.board[x][y] = "0"
+            print("miss\n")
+            self.guesses.append(pair)
+            shots -= 1
+        else:
+            data.board[x][y] = "#"
+            print("Hit\n")
+            self.guesses.append(pair)
+            num_ships -= 1
+            shots -= 1
+
+
+# -----------------------------------------------------------------
 
 
 def player_choose_ships():
@@ -232,7 +273,7 @@ def return_y_value(data):
         return y
 
 
-def user_ship_location(data, x, y):
+def user_ship_location(data, value, x, y):
     """
     Append ship  to the game board as per user coordinates 
     """
@@ -241,9 +282,29 @@ def user_ship_location(data, x, y):
         data.board[x][y] = "@" 
         pair = (x, y)
         # data.append(pair)
-        user_ship.append(pair)
+        # user_ship.append(pair)
+        value.ships.append(pair)
     elif data.board[x][y] == "@":
         print("You already placed ship here")
+
+
+# ----------------------------------------------------------------------------
+# Here is user ship location for game board - works :D
+def user_ship_location(self, x, y):
+    """
+    Append ship  to the game board as per user coordinates 
+    """
+
+    if self.board[x][y] == "-":
+        self.board[x][y] = "@" 
+        pair = (x, y)
+        self.ships.append(pair)
+
+    elif self.board[x][y] == "@":
+        print("You already placed ship here")
+
+
+# ------------------------------------------------------------------------------
 
 
 def user_shots(data, x, y):
@@ -292,6 +353,40 @@ def user_shots_two(data, x, y):
             num_ships -= 1
             shots -= 1
             return False
+
+
+# ---------------------------------------------------------------------
+# user_shot for the gameboard class
+def user_shots_two(self, data, x, y):
+    """
+    Function record user shots, and check against board
+    reduce the number of shots after each round
+    and ships after each hit
+    """
+    global num_ships
+    global shots
+    pair = (x, y)
+
+    if pair in self.guesses:
+        print("shoot again")
+    else:
+        if pair not in data.ships:
+            data.board[x][y] = "0"
+            print("miss\n")
+            self.guesses.append(pair)
+            shots -= 1
+            return False
+    
+        else:
+            data.board[x][y] = "X"
+            print("Hit\n")
+            self.guesses.append(pair)
+            num_ships -= 1
+            shots -= 1
+            return False
+
+
+# --------------------------------------------------------------------
 
 
 def random_ship_location(data):
@@ -389,13 +484,49 @@ def random_ship_location(data):
 # -------------------------------------------------------
 # this needs validation as it is possible to add ship to the same location
 print(computer_board.name)
+computer_board.print_board()
+
+print("=" * 40)
+
 print(user_board.name)
-while len(user_board.ships) < num_ships:
+user_board.print_board()
+
+print("=" * 40)
+
+decision = input("Would you like to choose your ships Y/N: ")
+
+if decision == "Y":
+    while len(user_board.ships) < num_ships:
+        cordinates = player_choose_ships()
+        x = return_x_value(cordinates)
+        y = return_y_value(cordinates)
+        user_board.add_ship(x, y)
+        user_board.print_board()
+else: 
+    computer_board.random_ship_location()
+    computer_board.print_board()
+    user_board.random_ship_location()
     user_board.print_board()
+
+
+while shots > 0:
     cordinates = player_choose_ships()
     x = return_x_value(cordinates)
     y = return_y_value(cordinates)
-    user_board.add_ship(x, y)
+    user_board.guess(computer_board, name = user_name)
+    computer_board.guess(user_board, "Computer")
+    print(computer_board.name)
+    computer_board.print_board()
 
-    
+    print("=" * 40)
+
+    print(user_board.name)
+    user_board.print_board()
+
+    print("=" * 40)
+
 print(user_board.ships)
+print(computer_board.ships)
+print(user_board.guesses)
+computer_board.print_board()
+print(computer_board.guesses)
